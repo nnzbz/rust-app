@@ -12,12 +12,12 @@ Environment for **Rust** Appication
 2. TZ=Asia/Shanghai
 3. C.UTF-8
 4. curl和telnet
-5. 运行的jar包：/usr/local/vertx/myservice.jar
+5. 运行的jar包：/usr/local/myapp/myapp
 
 ## 3. 编译并上传镜像
 
 ```sh
-docker buildx build --platform linux/arm64,linux/amd64 -t nnzbz/rust-app:1.0.0 . --push
+docker buildx build --platform linux/arm64,linux/amd64 -t nnzbz/rust-app:1.0.1 . --push
 docker buildx build --platform linux/arm64,linux/amd64 -t nnzbz/rust-app:latest . --push
 ```
 
@@ -39,9 +39,12 @@ vi /usr/local/myapp/stack.yml
 ```yaml{.line-numbers}
 services:
   svr:
-    image: nnzbz/rust-app:latest
+    image: nnzbz/rust-app:1.0.1
     init: true
-    hostname: myapp
+    hostname: <应用名称>
+    # 端口
+    ports:
+      - <外部端口>:<内部端口>
     environment:
       # 日志级别
       - RUST_LOG=debug
@@ -51,14 +54,13 @@ services:
       # 初始化脚本
       #- ~/opt/myapp/init.sh:/usr/local/myapp/init.sh:z
       # 应用目录
-      - ~/opt/myapp/app/myapp:/usr/local/myapp/myapp:z
-      - ~/opt/myapp/app/myapp.yml:/usr/local/myapp/myapp.yml:z
+      - ~/opt/<应用目录>/app/<应用名称>:/usr/local/myapp/myapp:z
+      - ~/opt/<应用目录>/app/<应用名称>.toml:/usr/local/myapp/myapp.toml:z
     deploy:
-      mode: global
       placement:
         constraints:
-          # 部署的节点指定是app角色的
-          - node.labels.role==app
+          # 部署指定角色的节点
+          - node.labels.role==<节点角色>
     logging:
       options:
         max-size: 8m

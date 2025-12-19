@@ -37,11 +37,13 @@ RUN touch init.sh
 # 生成entrypoint.sh文件
 RUN echo '#!/bin/sh' >> entrypoint.sh
 RUN echo 'set +e' >> entrypoint.sh
+RUN echo 'chmod +x ./init.sh' >> entrypoint.sh
+RUN echo 'chmod +x ./${APP_NAME}' >> entrypoint.sh
 RUN echo 'sh ./init.sh' >> entrypoint.sh
 RUN echo 'echo "print working directory:"' >> entrypoint.sh
 RUN echo 'pwd' >> entrypoint.sh
 RUN echo 'CMD="exec ./${APP_NAME} ${APP_ARGS}"' >> entrypoint.sh
-RUN echo 'echo "will $CMD"' >> entrypoint.sh
+RUN echo 'echo "will run command: $CMD"' >> entrypoint.sh
 RUN echo '$CMD' >> entrypoint.sh
 
 # 授权执行
